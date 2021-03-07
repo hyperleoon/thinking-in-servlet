@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletResponse;
  * @author leon
  * @date 2021-03-07 16:48
  **/
-public class AbstractController implements Controller {
+public abstract class AbstractController implements Controller {
 
     protected HttpServletRequest request;
 
