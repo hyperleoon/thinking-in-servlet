@@ -1,8 +1,12 @@
-package com.hyperleon.research.web.domain;
+package com.hyperleon.research.web.app.domain;
 
 import java.util.Objects;
 
-
+/**
+ * user dommain
+ * @author leon
+ * @date 2021-03-07 16:09
+ */
 public class User {
 
     private Long id;
@@ -57,8 +61,12 @@ public class User {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         User user = (User) o;
         return Objects.equals(id, user.id) && Objects.equals(name, user.name) && Objects.equals(password, user.password) && Objects.equals(email, user.email) && Objects.equals(phoneNumber, user.phoneNumber);
     }

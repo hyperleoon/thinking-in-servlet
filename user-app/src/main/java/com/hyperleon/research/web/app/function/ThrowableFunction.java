@@ -1,5 +1,9 @@
-package com.hyperleon.research.web.function;
+package com.hyperleon.research.web.app.function;
 
+/**
+ * ThrowableFunction
+ * @author xmg
+ */
 @FunctionalInterface
 public interface ThrowableFunction<T, R> {
 
@@ -20,7 +24,7 @@ public interface ThrowableFunction<T, R> {
      * @throws RuntimeException wrappers {@link Throwable}
      */
     default R execute(T t) throws RuntimeException {
-        R result = null;
+        R result;
         try {
             result = apply(t);
         } catch (Throwable e) {
