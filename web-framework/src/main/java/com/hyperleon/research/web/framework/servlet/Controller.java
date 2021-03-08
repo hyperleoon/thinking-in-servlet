@@ -10,7 +10,4 @@ import javax.servlet.http.HttpServletResponse;
  **/
 public interface Controller {
 
-    void init(HttpServletRequest request,HttpServletResponse response);
-
-    void clear();
 }

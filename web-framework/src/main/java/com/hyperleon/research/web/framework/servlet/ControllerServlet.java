@@ -8,19 +8,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.GET;
 import javax.ws.rs.HttpMethod;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.Set;
@@ -59,15 +53,8 @@ public class ControllerServlet extends HttpServlet {
                 if (pathFromMethod != null) {
                     requestPath += pathFromMethod.value();
                 }
-                HandlerMethodInfo handlerMethodInfo = new HandlerMethodInfo(requestPath, method, supportedHttpMethods);
-                List<Class> parameterTypesLists = new ArrayList<>();
-                for (Parameter parameter:method.getParameters()) {
-                    if (parameter.isAnnotationPresent(QueryParam.class)) {
-                        parameterTypesLists.add(parameter.getType());
-                    }
-                }
-                handlerMethodInfo.setParameterTypes(parameterTypesLists);
-                handleMethodInfoMapping.put(requestPath,handlerMethodInfo);
+                handleMethodInfoMapping.put(requestPath,
+                        new HandlerMethodInfo(requestPath, method, supportedHttpMethods));
             }
             controllersMapping.put(requestPath, controller);
         }
@@ -87,16 +74,14 @@ public class ControllerServlet extends HttpServlet {
     @Override
     public void service(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String requestUri = request.getRequestURI();
-        String preFixPath = request.getContextPath();
-        String requestMappingPath = substringAfter(requestUri,
-                StringUtils.replace(preFixPath, "//", "/"));
-        if (requestMappingPath.endsWith("/")) {
-            requestMappingPath = requestMappingPath.substring(0, requestMappingPath.length() - 1);
-        }
+        String requestURI = request.getRequestURI();
+        String servletContextPath = request.getContextPath();
+        String prefixPath = servletContextPath;
+        String requestMappingPath = substringAfter(requestURI,
+                StringUtils.replace(prefixPath, "//", "/"));
         Controller controller = controllersMapping.get(requestMappingPath);
+
         if (controller != null) {
-            controller.init(request, response);
             HandlerMethodInfo handlerMethodInfo = handleMethodInfoMapping.get(requestMappingPath);
             try {
                 if (handlerMethodInfo != null) {
@@ -105,106 +90,32 @@ public class ControllerServlet extends HttpServlet {
                         response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
                         return;
                     }
-                    Map<String, String[]> parameterMap = request.getParameterMap();
-                    String[] invokeArgs = new String[parameterMap.size()];
-                    Method handlerMethod = handlerMethodInfo.getHandlerMethod();
-                    if (handlerMethod.isAnnotationPresent(Jsp.class)) {
-                        if (handlerMethod.isAnnotationPresent(GET.class)) {
-                            handleJspGet(request, response, invokeArgs, handlerMethod, parameterMap, controller, handlerMethodInfo);
-                            return;
+                    if (controller instanceof PageController) {
+                        PageController pageController = (PageController) controller;
+                        String viewPath = pageController.execute(request, response);
+                        ServletContext servletContext = request.getServletContext();
+                        if (!viewPath.startsWith("/")) {
+                            viewPath = "/" + viewPath;
                         }
-                        if (handlerMethod.isAnnotationPresent(POST.class)) {
-                            handlerJspPost(request, response, invokeArgs, handlerMethod, parameterMap, controller, handlerMethodInfo);
-                        }
-                    } else {
-                        //todo rest
-                        String content = (String) handlerMethod.invoke(controller, invokeArgs);
+                        RequestDispatcher requestDispatcher = servletContext.getRequestDispatcher(viewPath);
+                        requestDispatcher.forward(request, response);
+                        return;
+                    } else if (controller instanceof RestController) {
+                        RestController restController = (RestController) controller;
+                        String content = restController.execute(request, response);
                         response.getWriter().write(content);
                         response.setStatus(HttpServletResponse.SC_OK);
                     }
+
                 }
-            } catch(Throwable throwable){
+            } catch (Throwable throwable) {
                 if (throwable.getCause() instanceof IOException) {
                     throw (IOException) throwable.getCause();
                 } else {
                     throw new ServletException(throwable.getCause());
                 }
-            } finally{
-                controller.clear();
             }
         }
-    }
-
-    private void handlerJspPost(HttpServletRequest request, HttpServletResponse response, String[] invokeArgs, Method handlerMethod, Map<String, String[]> parameterMap, Controller controller, HandlerMethodInfo handlerMethodInfo)
-            throws Exception {
-
-
-    }
-
-    private void handleJspGet(HttpServletRequest request, HttpServletResponse response, String[] invokeArgs, Method handlerMethod, Map<String, String[]> parameterMap,Controller controller,HandlerMethodInfo handlerMethodInfo)
-            throws Exception {
-        Parameter[] parameters = handlerMethod.getParameters();
-        if (parameterMap != null && parameterMap.size() > 0) {
-            for (int i = 0; i < parameters.length; i++) {
-                if (parameters[i].isAnnotationPresent(QueryParam.class)) {
-                    QueryParam queryParam = parameters[i].getAnnotation(QueryParam.class);
-                    if (queryParam != null) {
-                        invokeArgs[i] = parameterMap.getOrDefault(queryParam.value(),null)[0];
-                    } else {
-                        invokeArgs[i] = null;
-                    }
-
-                }
-            }
-        }
-        String viewPath = (String) handlerMethod.invoke(controller,handleArgsType(handlerMethodInfo.getParameterTypes(),invokeArgs));
-        ServletContext servletContext = request.getServletContext();
-        if (!viewPath.startsWith("/")) {
-            viewPath = "/" + viewPath;
-        }
-        RequestDispatcher requestDispatcher = servletContext.getRequestDispatcher(viewPath);
-        //forward to jsp servlet
-        requestDispatcher.forward(request, response);
-
-    }
-
-
-
-    private Object[] handleArgsType(List<Class> parameterTypes, String[] invokeArgs) {
-        if (invokeArgs == null || invokeArgs.length == 0) {
-            Object[] empty = new Object[parameterTypes.size()];
-            for (int i = 0; i< parameterTypes.size();i++) {
-                empty[i] = null;
-            }
-            return empty;
-        }
-        Object[] finalInvokeAges = new Object[invokeArgs.length];
-        for (int i = 0;i < invokeArgs.length; i++) {
-            Class<?> parameterType = parameterTypes.get(i);
-            Object finalInvokeAge;
-            String invokeArg = invokeArgs[i];
-            if (parameterType.isAssignableFrom(Long.class)) {
-                finalInvokeAge = Long.parseLong(invokeArg);
-            } else if (parameterType.isAssignableFrom(Integer.class)) {
-                finalInvokeAge = Integer.parseInt(invokeArg);
-            } else if (parameterType.isAssignableFrom(Double.class)) {
-                finalInvokeAge = Double.valueOf(invokeArg);
-            } else if (parameterType.isAssignableFrom(Float.class)) {
-                finalInvokeAge = Float.valueOf(invokeArg);
-            } else if (parameterType.isAssignableFrom(Boolean.class)) {
-                if ("true".equals(invokeArg)) {
-                    finalInvokeAge = Boolean.TRUE;
-                } else {
-                    finalInvokeAge = Boolean.FALSE;
-                }
-            } else if (parameterType.isAssignableFrom(String.class)) {
-                finalInvokeAge = invokeArg;
-            } else {
-                throw new RuntimeException("get request not support this paramter type");
-            }
-            finalInvokeAges[i] = finalInvokeAge;
-        }
-        return finalInvokeAges;
     }
 
 }

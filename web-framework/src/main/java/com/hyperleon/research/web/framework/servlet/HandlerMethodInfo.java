@@ -17,8 +17,6 @@ public class HandlerMethodInfo {
 
     private final Set<String> supportedHttpMethods;
 
-    private List<Class> parameterTypes;
-
     public HandlerMethodInfo(String requestPath, Method handlerMethod, Set<String> supportedHttpMethods) {
         this.requestPath = requestPath;
         this.handlerMethod = handlerMethod;
@@ -37,11 +35,4 @@ public class HandlerMethodInfo {
         return supportedHttpMethods;
     }
 
-    public List<Class> getParameterTypes() {
-        return parameterTypes;
-    }
-
-    public void setParameterTypes(List<Class> parameterTypes) {
-        this.parameterTypes = parameterTypes;
-    }
 }
