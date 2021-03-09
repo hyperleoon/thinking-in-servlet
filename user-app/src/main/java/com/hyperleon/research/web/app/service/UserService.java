@@ -10,16 +10,14 @@ import java.util.Collection;
  **/
 public interface UserService {
 
-    boolean register(User user);
 
+    boolean register(User user);
 
     boolean deregister(User user);
 
     boolean update(User user);
 
     User queryUserById(Long id);
-
-    Collection<User> getAll();
 
     User queryUserByNameAndPassword(String name, String password);
 }

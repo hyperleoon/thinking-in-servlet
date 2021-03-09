@@ -1,0 +1,9 @@
+DROP TABLE users;
+CREATE TABLE user
+(
+    id INT PRIMARY KEY NOT NULL,
+    name VARCHAR(16) NOT NULL,
+    password VARCHAR(64) NOT NULL,
+    email VARCHAR(64) NOT NULL,
+    phoneNumber VARCHAR(64) NOT NULL
+)

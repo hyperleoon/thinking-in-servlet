@@ -1,62 +1,41 @@
 package com.hyperleon.research.web.framework.orm;
 
-import java.beans.BeanInfo;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.Method;
+import javax.annotation.Resource;
+import javax.persistence.EntityManager;
+import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author leon
  * @date 2021-03-08 22:25
  **/
 public class DBConnectionManager {
-    private Connection connection;
+    private final Logger logger = Logger.getLogger(DBConnectionManager.class.getName());
 
-    public void setConnection(Connection connection) {
+    @Resource(name = "jdbc/UserPlatformDB")
+    private DataSource dataSource;
 
-        this.connection = connection;
+    @Resource(name = "bean/EntityManager")
+    private EntityManager entityManager;
+
+    public EntityManager getEntityManager() {
+        return entityManager;
     }
 
-    public Connection getConnection()  {
-        String databaseURL ="jdbc:derby:TEST/db/user-platform;create=true";
+    public Connection getConnection() {
         Connection connection = null;
         try {
-            connection = DriverManager.getConnection(databaseURL);
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+            connection = dataSource.getConnection();
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, e.getMessage());
+        }
+        if (connection != null) {
+            logger.log(Level.INFO, "获取 JNDI 数据库连接成功！");
         }
         return connection;
     }
 
-    public void releaseConnection() {
-        if (this.connection != null) {
-            try {
-                this.connection.close();
-            } catch (SQLException e) {
-                throw new RuntimeException(e.getCause());
-            }
-        }
-    }
-
-    private static String mapColumnLabel(String fieldName) {
-        return fieldName;
-    }
-
-    /**
-     * 数据类型与 ResultSet 方法名映射
-     */
-    static Map<Class, String> typeMethodMappings = new HashMap<>();
-
-    static {
-        typeMethodMappings.put(Long.class, "getLong");
-        typeMethodMappings.put(String.class, "getString");
-    }
 }

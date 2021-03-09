@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+    //jdbc:h2:˜/test", "sa", "sa"
+
+    <Resource name="jdbc/UserPlatformDB"
+              type="javax.sql.DataSource"  auth="Container"
+              description="Derby database for User Platform"
+              maxActive="100" maxIdle="30" maxWait="10000"
+              username="sa" password="sa"
+              driverClassName="org.h2.Driver"
+              url="jdbc:h2:~/test"/>
+
+    <!-- FactoryBean -->
+    <Resource name="bean/DBConnectionManager" auth="Container"
+              type="com.hyperleon.research.web.framework.orm.DBConnectionManager"
+              factory="org.apache.naming.factory.BeanFactory" />
+
+
+    <Resource name="bean/EntityManager" auth="Container"
+              type="com.hyperleon.research.web.framework.orm.DelegatingEntityManager"
+              persistenceUnitName="emf"
+              propertiesLocation="META-INF/jpa-datasource.properties"
+              factory="org.apache.naming.factory.BeanFactory" />
+
+    <Resource name="bean/Validator" auth="Container"
+              type="com.hyperleon.research.web.framework.orm.validator.DelegatingValidator"
+              factory="org.apache.naming.factory.BeanFactory" />
+
+    <Resource name="bean/UserService" auth="Container"
+              type="com.hyperleon.research.web.app.service.impl.UserServiceImpl"
+              factory="org.apache.naming.factory.BeanFactory" />
+
+</Context>

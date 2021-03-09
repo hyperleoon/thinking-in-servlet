@@ -1,4 +1,4 @@
-package com.hyperleon.research.web.app.function;
+package com.hyperleon.research.web.framework.servlet.function;
 
 /**
  * ThrowableFunction

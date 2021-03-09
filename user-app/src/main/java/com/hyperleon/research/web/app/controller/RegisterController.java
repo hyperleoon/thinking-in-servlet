@@ -5,8 +5,10 @@ import com.hyperleon.research.web.app.service.UserService;
 import com.hyperleon.research.web.app.service.impl.UserServiceImpl;
 import com.hyperleon.research.web.framework.servlet.PageController;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 
@@ -17,17 +19,19 @@ import javax.ws.rs.Path;
 @Path("/register")
 public class RegisterController implements PageController {
 
-    private UserService userService = new UserServiceImpl();
+    @Resource(name = "bean/UserService")
+    private UserService userService;
 
     @Override
-    @POST
+    @GET
+    @Path("")
     public String execute(HttpServletRequest request, HttpServletResponse response) throws Throwable {
         String user = request.getParameter("user");
         String password = request.getParameter("password");
         String email = request.getParameter("email");
         String phoneNumber = request.getParameter("phoneNumber");
         if (user == null || password == null) {
-            return "register.jsp";
+            return "";
         }
         if (userService.register(new User(user, password, email, phoneNumber))) {
             return "login-form.jsp";

@@ -1,12 +1,10 @@
 package com.hyperleon.research.web.app.service.impl;
 
 import com.hyperleon.research.web.app.domain.User;
-import com.hyperleon.research.web.app.repository.RepositoryProxy;
-import com.hyperleon.research.web.app.repository.UserRepository;
 import com.hyperleon.research.web.app.service.UserService;
-
-import java.sql.SQLException;
-import java.util.Collection;
+import javax.annotation.Resource;
+import javax.persistence.EntityManager;
+import javax.xml.validation.Validator;
 
 /**
  * @author leon
@@ -14,19 +12,16 @@ import java.util.Collection;
  **/
 public class UserServiceImpl implements UserService {
 
-    UserRepository userRepository;
+    @Resource(name = "bean/EntityManager")
+    private EntityManager entityManager;
 
-    {
-        try {
-            userRepository = RepositoryProxy.create(UserRepository.class);
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-    }
+    @Resource(name = "bean/Validator")
+    private Validator validator;
 
     @Override
     public boolean register(User user) {
-        return userRepository.save(user);
+        entityManager.persist(user);
+        return false;
     }
 
     @Override
@@ -42,11 +37,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public User queryUserById(Long id) {
         return null;
-    }
-
-    @Override
-    public Collection<User> getAll() {
-        return  userRepository.getAll();
     }
 
     @Override

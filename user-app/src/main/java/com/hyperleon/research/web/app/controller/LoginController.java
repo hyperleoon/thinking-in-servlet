@@ -1,15 +1,14 @@
 package com.hyperleon.research.web.app.controller;
 
-import com.hyperleon.research.web.app.domain.User;
 import com.hyperleon.research.web.app.service.UserService;
 import com.hyperleon.research.web.app.service.impl.UserServiceImpl;
 import com.hyperleon.research.web.framework.servlet.PageController;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import java.util.Collection;
 
 /**
  * @author leon
@@ -18,19 +17,21 @@ import java.util.Collection;
 @Path("/login")
 public class LoginController implements PageController {
 
-    private UserService userService = new UserServiceImpl();
+    @Resource(name = "bean/UserService")
+    private UserService userService;
 
     @POST
     @Override
     public String execute(HttpServletRequest request, HttpServletResponse response) {
-        String password = request.getParameter("password");
-        String email = request.getParameter("email");
-        Collection<User> all = userService.getAll();
-        for (User userTmp:all){
-            if (userTmp.getEmail().equals(email) && userTmp.getPassword().equals(password)){
-                return "success.jsp";
-            }
-        }
-        return "failed.jsp";
+//        String password = request.getParameter("password");
+//        String email = request.getParameter("email");
+//        Collection<User> all = userService.();
+//        for (User userTmp:all){
+//            if (userTmp.getEmail().equals(email) && userTmp.getPassword().equals(password)){
+//                return "success.jsp";
+//            }
+//        }
+//        return "failed.jsp";
+        return null;
     }
 }

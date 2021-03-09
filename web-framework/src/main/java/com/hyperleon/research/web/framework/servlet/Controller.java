@@ -1,8 +1,5 @@
 package com.hyperleon.research.web.framework.servlet;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 /**
  * A tagging interface
  * @author leon
