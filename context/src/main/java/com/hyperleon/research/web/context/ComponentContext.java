@@ -1,7 +1,7 @@
-package com.hyperleon.research.web.framework.servlet;
+package com.hyperleon.research.web.context;
 
-import com.hyperleon.research.web.framework.servlet.function.ThrowableAction;
-import com.hyperleon.research.web.framework.servlet.function.ThrowableFunction;
+import com.hyperleon.research.web.context.function.ThrowableAction;
+import com.hyperleon.research.web.context.function.ThrowableFunction;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -11,6 +11,7 @@ import javax.naming.NameClassPair;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.servlet.ServletContext;
+import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,6 +27,7 @@ import java.util.stream.Stream;
  * @date 2021-03-09 23:07
  **/
 public class ComponentContext {
+
     public static final String CONTEXT_NAME = ComponentContext.class.getName();
 
     private static final String COMPONENT_ENV_CONTEXT_NAME = "java:comp/env";
@@ -71,24 +73,21 @@ public class ComponentContext {
 
 
     protected void initializeComponents() {
-        componentsMap.values().forEach(component -> {
+        for (Map.Entry entry : componentsMap.entrySet()) {
+            Object component = entry.getValue();
             Class<?> componentClass = component.getClass();
-
             injectComponents(component, componentClass);
-
             processPostConstruct(component, componentClass);
-
             processPreDestroy();
-        });
+        }
     }
 
     private void injectComponents(Object component, Class<?> componentClass) {
-        Stream.of(componentClass.getDeclaredFields())
-                .filter(field -> {
-                    int mods = field.getModifiers();
-                    return !Modifier.isStatic(mods) &&
-                            field.isAnnotationPresent(Resource.class);
-                }).forEach(field -> {
+        Field[] declaredFields = componentClass.getDeclaredFields();
+        for (Field field : declaredFields) {
+            if (Modifier.isStatic(field.getModifiers()) || !field.isAnnotationPresent(Resource.class)) {
+                continue;
+            }
             Resource resource = field.getAnnotation(Resource.class);
             String resourceName = resource.name();
             Object injectedObject = lookupComponent(resourceName);
@@ -97,8 +96,9 @@ public class ComponentContext {
                 // 注入目标对象
                 field.set(component, injectedObject);
             } catch (IllegalAccessException e) {
+                e.printStackTrace();
             }
-        });
+        }
     }
 
     private void processPostConstruct(Object component, Class<?> componentClass) {
@@ -122,7 +122,7 @@ public class ComponentContext {
 
 
     protected <R> R executeInContext(ThrowableFunction<Context, R> function) {
-        return executeInContext(function, false);
+        return executeInContext(function, true);
     }
 
 
@@ -157,6 +157,11 @@ public class ComponentContext {
     public List<String> getComponentNames() {
         return new ArrayList<>(componentsMap.keySet());
     }
+
+    public List<Object> getComponentInstance() {
+        return new ArrayList<>(componentsMap.values());
+    }
+
 
     private List<String> listAllComponentNames() {
         return listComponentNames("/");

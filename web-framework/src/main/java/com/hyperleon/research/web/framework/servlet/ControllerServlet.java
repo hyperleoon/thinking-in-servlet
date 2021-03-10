@@ -1,5 +1,6 @@
 package com.hyperleon.research.web.framework.servlet;
 
+import com.hyperleon.research.web.context.ComponentContext;
 import org.apache.commons.lang.StringUtils;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
@@ -15,6 +16,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.Set;
@@ -35,28 +37,33 @@ public class ControllerServlet extends HttpServlet {
     @Override
     public void init(ServletConfig servletConfig) {
         servletConfig.getServletContext().log("init");
-        initHandleMethods();
+        initHandleMethods(servletConfig.getServletContext());
     }
 
-    private void initHandleMethods() {
-        for (Controller controller : ServiceLoader.load(Controller.class)) {
-            Class<?> controllerClass = controller.getClass();
-            Path pathFromClass = controllerClass.getAnnotation(Path.class);
-            String requestPath = pathFromClass.value();
-            Method[] publicMethods = controllerClass.getMethods();
-            for (Method method : publicMethods) {
-                if (!method.isAnnotationPresent(Path.class)) {
-                    continue;
+    private void initHandleMethods(ServletContext servletContext) {
+        ComponentContext componentContext = (ComponentContext)servletContext.getAttribute(ComponentContext.CONTEXT_NAME);
+        List<Object> componentInstances = componentContext.getComponentInstance();
+        for (Object object: componentInstances) {
+            if (object instanceof Controller) {
+                Controller controller = (Controller) object;
+                Class<?> controllerClass = controller.getClass();
+                Path pathFromClass = controllerClass.getAnnotation(Path.class);
+                String requestPath = pathFromClass.value();
+                Method[] publicMethods = controllerClass.getMethods();
+                for (Method method : publicMethods) {
+                    if (!method.isAnnotationPresent(Path.class)) {
+                        continue;
+                    }
+                    Set<String> supportedHttpMethods = findSupportedHttpMethods(method);
+                    Path pathFromMethod = method.getAnnotation(Path.class);
+                    if (pathFromMethod != null) {
+                        requestPath += pathFromMethod.value();
+                    }
+                    handleMethodInfoMapping.put(requestPath,
+                            new HandlerMethodInfo(requestPath, method, supportedHttpMethods));
                 }
-                Set<String> supportedHttpMethods = findSupportedHttpMethods(method);
-                Path pathFromMethod = method.getAnnotation(Path.class);
-                if (pathFromMethod != null) {
-                    requestPath += pathFromMethod.value();
-                }
-                handleMethodInfoMapping.put(requestPath,
-                        new HandlerMethodInfo(requestPath, method, supportedHttpMethods));
+                controllersMapping.put(requestPath, controller);
             }
-            controllersMapping.put(requestPath, controller);
         }
     }
 

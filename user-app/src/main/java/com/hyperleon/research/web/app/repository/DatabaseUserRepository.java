@@ -1,9 +1,12 @@
 package com.hyperleon.research.web.app.repository;
 
+
 import com.hyperleon.research.web.app.domain.User;
-import com.hyperleon.research.web.framework.servlet.ComponentContext;
-import com.hyperleon.research.web.framework.servlet.function.ThrowableFunction;
+import com.hyperleon.research.web.context.ComponentContext;
+import com.hyperleon.research.web.context.function.ThrowableFunction;
 import com.hyperleon.research.web.framework.orm.DBConnectionManager;
+import org.apache.commons.lang.ClassUtils;
+
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
@@ -19,8 +22,6 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import static org.apache.commons.lang.ClassUtils.wrapperToPrimitive;
 
 /**
  * @author leon
@@ -110,7 +111,7 @@ public class DatabaseUserRepository implements UserRepository {
             for (int i = 0; i < args.length; i++) {
                 Object arg = args[i];
                 Class argType = arg.getClass();
-                Class wrapperType = wrapperToPrimitive(argType);
+                Class wrapperType = ClassUtils.wrapperToPrimitive(argType);
                 if (wrapperType == null) {
                     wrapperType = argType;
                 }

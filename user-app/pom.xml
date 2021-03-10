@@ -15,6 +15,7 @@
 
 
     <dependencies>
+
         <dependency>
             <groupId>com.hyperleon.research</groupId>
             <artifactId>web-framework</artifactId>
@@ -27,28 +28,6 @@
             <version>${revision}</version>
         </dependency>
 
-        <!-- Servlet API -->
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>jstl</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.derby</groupId>
-            <artifactId>derby</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.hyperleon.research</groupId>
-            <artifactId>orm-framework</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
 
     </dependencies>
 

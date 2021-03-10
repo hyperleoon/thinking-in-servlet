@@ -2,13 +2,11 @@ package com.hyperleon.research.web.app.controller;
 
 import com.hyperleon.research.web.app.domain.User;
 import com.hyperleon.research.web.app.service.UserService;
-import com.hyperleon.research.web.app.service.impl.UserServiceImpl;
 import com.hyperleon.research.web.framework.servlet.PageController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 
@@ -20,10 +18,10 @@ import javax.ws.rs.Path;
 public class RegisterController implements PageController {
 
     @Resource(name = "bean/UserService")
-    private UserService userService;
+    public UserService userService;
 
     @Override
-    @GET
+    @POST
     @Path("")
     public String execute(HttpServletRequest request, HttpServletResponse response) throws Throwable {
         String user = request.getParameter("user");

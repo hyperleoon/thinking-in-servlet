@@ -13,6 +13,7 @@
         <module>web-framework</module>
         <module>user-app</module>
         <module>orm-framework</module>
+        <module>context</module>
     </modules>
 
     <properties>
@@ -27,7 +28,7 @@
         <h2.version>1.4.200</h2.version>
         <commons-validator.version>1.7</commons-validator.version>
         <hibernate.version>5.4.29.Final</hibernate.version>
-        <hibernate.validator.version>6.1.7.Final</hibernate.validator.version>
+        <hibernate.validator.version>5.1.0.Final</hibernate.validator.version>
     </properties>
 
     <dependencyManagement>
@@ -66,12 +67,6 @@
                 <version>${h2.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>commons-validator</groupId>
-                <artifactId>commons-validator</artifactId>
-                <version>${commons-validator.version}</version>
-            </dependency>
-
             <!-- Hibernate ORM Core -->
             <dependency>
                 <groupId>org.hibernate</groupId>
@@ -88,21 +83,9 @@
 
             <!-- Hibernate Validator -->
             <dependency>
-                <groupId>org.hibernate.validator</groupId>
+                <groupId>org.hibernate</groupId>
                 <artifactId>hibernate-validator</artifactId>
                 <version>${hibernate.validator.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>javax.el</groupId>
-                <artifactId>javax.el-api</artifactId>
-                <version>3.0.0</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.glassfish</groupId>
-                <artifactId>javax.el</artifactId>
-                <version>3.0.1-b11</version>
             </dependency>
 
         </dependencies>

@@ -1,7 +1,6 @@
 package com.hyperleon.research.web.app.controller;
 
 import com.hyperleon.research.web.app.service.UserService;
-import com.hyperleon.research.web.app.service.impl.UserServiceImpl;
 import com.hyperleon.research.web.framework.servlet.PageController;
 
 import javax.annotation.Resource;
@@ -18,7 +17,7 @@ import javax.ws.rs.Path;
 public class LoginController implements PageController {
 
     @Resource(name = "bean/UserService")
-    private UserService userService;
+    public UserService userService;
 
     @POST
     @Override
@@ -31,7 +30,6 @@ public class LoginController implements PageController {
 //                return "success.jsp";
 //            }
 //        }
-//        return "failed.jsp";
-        return null;
+        return "failed.jsp";
     }
 }

@@ -4,7 +4,8 @@ import com.hyperleon.research.web.app.domain.User;
 import com.hyperleon.research.web.app.service.UserService;
 import javax.annotation.Resource;
 import javax.persistence.EntityManager;
-import javax.xml.validation.Validator;
+import javax.validation.Validator;
+
 
 /**
  * @author leon

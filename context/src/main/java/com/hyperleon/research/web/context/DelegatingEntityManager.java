@@ -1,6 +1,5 @@
-package com.hyperleon.research.web.framework.orm;
+package com.hyperleon.research.web.context;
 
-import com.hyperleon.research.web.framework.servlet.ComponentContext;
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
