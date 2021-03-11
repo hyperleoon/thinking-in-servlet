@@ -1,5 +1,6 @@
 package com.hyperleon.research.web.app.controller;
 
+import com.hyperleon.research.web.app.domain.User;
 import com.hyperleon.research.web.app.service.UserService;
 import com.hyperleon.research.web.framework.servlet.PageController;
 
@@ -21,15 +22,14 @@ public class LoginController implements PageController {
 
     @POST
     @Override
+    @Path("")
     public String execute(HttpServletRequest request, HttpServletResponse response) {
-//        String password = request.getParameter("password");
-//        String email = request.getParameter("email");
-//        Collection<User> all = userService.();
-//        for (User userTmp:all){
-//            if (userTmp.getEmail().equals(email) && userTmp.getPassword().equals(password)){
-//                return "success.jsp";
-//            }
-//        }
-        return "failed.jsp";
+        String name = request.getParameter("name");
+        String password = request.getParameter("password");
+        User target = userService.queryUserByNameAndPassword(name,password);
+        if (target == null) {
+            return "fail.jsp";
+        }
+        return "success.jsp";
     }
 }

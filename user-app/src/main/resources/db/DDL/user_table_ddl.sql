@@ -1,4 +1,4 @@
-DROP TABLE users;
+DROP TABLE user;
 CREATE TABLE user
 (
     id INT PRIMARY KEY NOT NULL,

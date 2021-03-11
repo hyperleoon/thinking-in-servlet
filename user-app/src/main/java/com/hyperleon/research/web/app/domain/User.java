@@ -1,23 +1,54 @@
 package com.hyperleon.research.web.app.domain;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import java.io.Serializable;
 import java.util.Objects;
+
+import static javax.persistence.GenerationType.AUTO;
 
 /**
  * user dommain
  * @author leon
  * @date 2021-03-07 16:09
  */
-public class User {
+@Entity
+@Table(name = "user")
+public class User implements Serializable {
 
+
+    @Id
+    @GeneratedValue(strategy = AUTO)
+    @NotNull
     private Long id;
 
+    @Column
     private String name;
 
+    @Column
+    @Size(min = 6,max = 32)
     private String password;
 
+    @Column
     private String email;
 
+    @Column
     private String phoneNumber;
+
+    public User() {
+    }
+
+    public User(String name, String password, String email, String phoneNumber) {
+        this.name = name;
+        this.password = password;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+    }
 
     public Long getId() {
         return id;
@@ -69,16 +100,6 @@ public class User {
         }
         User user = (User) o;
         return Objects.equals(id, user.id) && Objects.equals(name, user.name) && Objects.equals(password, user.password) && Objects.equals(email, user.email) && Objects.equals(phoneNumber, user.phoneNumber);
-    }
-
-    public User() {
-    }
-
-    public User(String name, String password, String email, String phoneNumber) {
-        this.name = name;
-        this.password = password;
-        this.email = email;
-        this.phoneNumber = phoneNumber;
     }
 
     @Override

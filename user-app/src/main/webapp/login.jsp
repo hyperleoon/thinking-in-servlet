@@ -7,10 +7,10 @@
 <div class="container">
     <h1>用户登录</h1>
     <h6>已注册成功</h6>
-    <form action="/register" method="post">
+    <form action="/login" method="post">
         <table>
             <tr>
-                <td>用户：<input name="user" type="text"></td>
+                <td>用户：<input name="name" type="text"></td>
             </tr>
             <tr>
                 <td>密码：<input name="password" type="text"></td>

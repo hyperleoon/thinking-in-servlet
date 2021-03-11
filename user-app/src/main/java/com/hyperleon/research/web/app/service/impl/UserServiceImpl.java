@@ -4,6 +4,7 @@ import com.hyperleon.research.web.app.domain.User;
 import com.hyperleon.research.web.app.service.UserService;
 import javax.annotation.Resource;
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.validation.Validator;
 
 
@@ -22,7 +23,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean register(User user) {
         entityManager.persist(user);
-        return false;
+        return true;
     }
 
     @Override
@@ -42,6 +43,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User queryUserByNameAndPassword(String name, String password) {
-        return null;
+       return null;
     }
 }
